@@ -54,6 +54,8 @@ inline constexpr uint32_t DEFAULT_BUFFER_MS = 100;
 /// What --buffer-ms will accept, either side inclusive.
 inline constexpr uint32_t MIN_BUFFER_MS = 10;
 inline constexpr uint32_t MAX_BUFFER_MS = 2000;
+/// --keep-output-alive upper bound, in seconds.
+inline constexpr uint32_t MAX_KEEP_OUTPUT_ALIVE_S = 3600;
 
 /// Every option whose provenance the parser tracks, so a config file can layer under argv.
 enum class Opt : unsigned {
@@ -85,6 +87,7 @@ enum class Opt : unsigned {
     PairingCode,    ///< --pairing-code
     FixedVolume,    ///< --fixed-volume
     ReleaseDevice,  ///< --release-device
+    KeepAlive,      ///< --keep-output-alive
 };
 
 /// Everything the flag surface configures.
@@ -124,6 +127,11 @@ struct Options {
 
     /// --release-device: close the output device at stream end instead of holding it.
     bool release_device{false};
+
+    /// --keep-output-alive <s>: keep the output running on silence for this long after the last
+    /// audio (ALSA only), for an HDMI/S/PDIF receiver that re-locks whenever the digital signal
+    /// stops. 0, the default, stops the output between streams as before.
+    uint32_t keep_output_alive_s{0};
 
     /// --no-mdns: do not advertise `_sendspin._tcp`.
     bool no_mdns{false};
